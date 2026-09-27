@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Interaktif TKA Sosiologi HOTS</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#07152b;
+  color:#f4f7fb;
+}
+.app{
+  max-width:760px;
+  margin:auto;
+  min-height:100vh;
+  padding:18px 14px 35px;
+}
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:#dce7f5;
+  margin-bottom:18px;
+}
+.titlebar{
+  background:#172945;
+  border-radius:28px;
+  padding:12px 18px;
+  font-size:15px;
+  flex:1;
+  margin-right:12px;
+}
+.icon{font-size:25px}
+.card{
+  background:#10223d;
+  border:1px solid #263b5b;
+  border-radius:25px;
+  padding:28px 22px 30px;
+  box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+h1{
+  margin:0;
+  color:#45baf2;
+  font-size:30px;
+}
+.subtitle{
+  color:#aebbd0;
+  font-size:17px;
+  margin:6px 0 22px;
+}
+.progress-info{
+  display:flex;
+  justify-content:space-between;
+  color:#aebbd0;
+  margin:12px 0;
+  font-size:15px;
+}
+.progress{
+  height:9px;
+  background:#263b55;
+  border-radius:20px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:#39b9f3;
+  transition:.25s;
+}
+.section{
+  display:inline-block;
+  background:#087bad;
+  padding:9px 13px;
+  border-radius:10px;
+  font-weight:bold;
+  margin:24px 0 18px;
+}
+.question{
+  font-size:22px;
+  line-height:1.55;
+  margin-bottom:22px;
+}
+.option{
+  width:100%;
+  text-align:left;
+  color:#eef5ff;
+  background:#142943;
+  border:1px solid #263b56;
+  border-radius:17px;
+  padding:16px;
+  margin:9px 0;
+  font-size:17px;
+  cursor:pointer;
+  transition:.2s;
+}
+.option:hover{background:#1b3657;border-color:#3db8ef}
+.option.selected{border-color:#42baf3;background:#173b5b}
+.option.correct{border-color:#27d17f;background:#12462f}
+.option.wrong{border-color:#ff6b6b;background:#4a2025}
+.option.disabled{cursor:default}
+.letter{
+  display:inline-block;
+  width:30px;
+  color:#36b9f1;
+  font-weight:bold;
+}
+.reason{
+  display:none;
+  margin-top:15px;
+  padding:14px;
+  border-radius:13px;
+  background:#172f4d;
+  color:#cbd8e9;
+  line-height:1.5;
+}
+.nav{
+  display:flex;
+  gap:12px;
+  margin-top:25px;
+}
+button.navbtn{
+  flex:1;
+  border:0;
+  padding:16px;
+  border-radius:15px;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.prev{background:#263850;color:#fff}
+.next{background:#38b9f1;color:#062039}
+button:disabled{opacity:.45;cursor:not-allowed}
+.result{
+  display:none;
+  text-align:center;
+}
+.score{
+  font-size:52px;
+  color:#42baf3;
+  font-weight:bold;
+  margin:20px 0 8px;
+}
+.result p{color:#bdcadd;line-height:1.6}
+.restart{
+  background:#39b9f3;
+  border:0;
+  border-radius:14px;
+  padding:14px 25px;
+  font-size:17px;
+  font-weight:bold;
+  cursor:pointer;
+}
+.small{
+  color:#8798b0;
+  font-size:13px;
+  margin-top:15px;
+}
+@media(max-width:600px){
+  .app{padding:12px 10px}
+  .card{padding:23px 15px}
+  h1{font-size:27px}
+  .question{font-size:19px}
+  .option{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="titlebar">Kuis Interaktif TKA Sosiologi HOTS (31 Soal)</div>
+    <div class="icon">↻ ⋮</div>
+  </div>
+
+  <div class="card">
+    <div id="quiz">
+      <h1>Kuis TKA Sosiologi (HOTS)</h1>
+      <div class="subtitle">31 Soal Latihan Penilaian Sosiologi / UTBK-SNBT</div>
+
+      <div class="progress-info">
+        <span id="number">Soal 1 dari 31</span>
+        <span id="part">Bagian I: Pilihan Ganda Tunggal</span>
+      </div>
+      <div class="progress"><div class="progress-fill" id="bar"></div></div>
+
+      <div id="section" class="section">Pilihan Ganda Tunggal</div>
+      <div id="question" class="question"></div>
+      <div id="options"></div>
+      <div id="reason" class="reason"></div>
+
+      <div class="nav">
+        <button class="navbtn prev" id="prev" onclick="previousQuestion()">Sebelumnya</button>
+        <button class="navbtn next" id="next" onclick="nextQuestion()">Selanjutnya</button>
+      </div>
+    </div>
+
+    <div id="result" class="result">
+      <h1>Hasil Kuis</h1>
+      <div class="score" id="score"></div>
+      <p id="resultText"></p>
+      <button class="restart" onclick="restartQuiz()">Ulangi Kuis</button>
+      <div class="small">Kuis TKA Sosiologi HOTS — 31 soal</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+{
+q:"Maraknya pembentukan komunitas online berbasis kecerdasan buatan (AI) membuat batas antara ruang fisik dan digital semakin kabur. Individu merasa memiliki keterikatan batin yang tinggi di dalam grup maya meski tak pernah bertatap muka langsung. Fenomena ini menunjukkan adanya transformasi bentuk solidaritas sosial menurut Émile Durkheim, yaitu...",
+o:[
+"A. Pergeseran dari solidaritas mekanik ke solidaritas organik yang termediasi digital",
+"B. Terbentuknya solidaritas sibernetik yang menggantikan norma formal",
+"C. Kemunculan solidaritas mekanik baru berbasis kesamaan minat digital",
+"D. Hilangnya solidaritas sosial akibat alienasi media sosial",
+"E. Dominasi struktur kelas pekerja digital dalam ruang siber"
+],a:"A",r:"Solidaritas organik berkaitan dengan pembagian kerja dan saling ketergantungan. Dalam konteks digital, hubungan sosial dapat berlangsung melalui jaringan online."
+},
+{
+q:"Maraknya praktik pinjaman online (pinjol) ilegal di kalangan kaum muda usia produktif memicu maraknya depresi dan disfungsi sosial dalam keluarga. Analisis sosiologis yang tepat menggunakan teori anomi dari Robert K. Merton adalah...",
+o:[
+"A. Kebudayaan menekankan kesuksesan finansial, namun struktur sosial membatasi akses legitimat untuk mencapainya",
+"B. Kegagalan proses sosialisasi primer dalam menanamkan nilai hemat sejak dini",
+"C. Konflik antarkelas yang disengaja oleh institusi keuangan kapitalis",
+"D. Hilangnya kesadaran kolektif akibat pengaruh modernisasi Barat",
+"E. Respon adaptasi individu dalam bentuk konformitas ekstrem terhadap standar hidup"
+],a:"B",r:"Teori anomi Merton menjelaskan ketegangan ketika tujuan budaya, seperti kesuksesan finansial, tidak diimbangi akses yang sama terhadap cara-cara yang sah."
+},
+{
+q:"Fenomena \"Gig Economy\" yang melahirkan banyaknya pekerja lepas (freelancer) dan pengemudi transportasi daring menciptakan bentuk hubungan kerja baru. Ditinjau dari pandangan Karl Marx, fenomena ini dapat memicu...",
+o:[
+"A. Hilangnya diferensiasi sosial akibat kesetaraan status pekerja",
+"B. Bentuk baru alienasi pekerja karena ketidakpastian kerja dan hilangnya jaminan sosial",
+"C. Penguatan kesadaran kelas di kalangan pekerja lepas digital",
+"D. Integrasi sosial yang harmonis antara pemilik platform dan mitra kerja",
+"E. Transisi mulus menuju masyarakat tanpa kelas berbasis teknologi"
+],a:"B",r:"Dalam perspektif Marx, alienasi dapat muncul ketika pekerja memiliki kontrol terbatas terhadap pekerjaan dan hasil kerjanya. Ketidakpastian kerja dapat memperkuat kondisi tersebut."
+},
+{
+q:"Maraknya tren \"Flexing\" gaya hidup mewah di media sosial oleh para figur publik menimbulkan perubahan standar konsumsi masyarakat bawah. Fenomena ini paling tepat dijelaskan dengan konsep...",
+o:[
+"A. Conspicuous Consumption (Thorstein Veblen)",
+"B. Habitus and Capital (Pierre Bourdieu)",
+"C. Cultural Lag (William F. Ogburn)",
+"D. Looking-Glass Self (Charles H. Cooley)",
+"E. Social Mobility (Pitirim Sorokin)"
+],a:"A",r:"Conspicuous consumption adalah konsumsi mencolok yang dilakukan untuk menunjukkan status atau kemampuan ekonomi kepada orang lain."
+},
+{
+q:"Relokasi Ibu Kota Negara (IKN) Nusantara membawa dampak signifikan terhadap komunitas lokal suku Paser dan Balik di Kalimantan Timur. Potensi konflik sosial mendasar yang diprediksi oleh pendekatan sosiologi pembangunan adalah...",
+o:[
+"A. Konflik rasial antara pendatang dan suku asli",
+"B. Marginalisasi budaya dan dislokasi ekonomi akibat marginalisasi hak atas tanah adat",
+"C. Penurunan tingkat pendidikan masyarakat akibat masuknya industri modern",
+"D. Disintegrasi politik akibat penolakan total terhadap ideologi Pancasila",
+"E. Dominasi sektor informal yang menggeser pemerintahan daerah"
+],a:"B",r:"Pendekatan sosiologi pembangunan memperhatikan dampak pembangunan terhadap akses tanah, sumber daya, budaya, dan posisi kelompok lokal."
+},
+{
+q:"Dalam lanskap media digital, fenomena \"Echo Chamber\" dan \"Filter Bubble\" membuat netizen hanya menerima informasi yang sesuai dengan pandangan mereka sendiri, sehingga meningkatkan polarisasi politik. Proses interaksi sosial yang terhambat di sini adalah...",
+o:[
+"A. Akomodasi formal",
+"B. Asimilasi struktural",
+"C. Oposisi konstruktif",
+"D. Kontak sosial sekunder yang komunikatif dan objektif",
+"E. Amalgamasi budaya digital"
+],a:"D",r:"Echo chamber dan filter bubble dapat membatasi pertukaran informasi lintas pandangan. Dalam soal ini, proses kontak sosial sekunder yang terbuka dan komunikatif menjadi terhambat."
+},
+{
+q:"Fenomena perundungan siber (cyberbullying) yang melibatkan remaja sekolah menengah sering kali bersumber dari pembentukan kelompok in-group dan out-group yang tajam di media sosial. Hal ini menunjukkan bahwa fungsi kelompok sosial telah mengalami penyelewengan, yaitu...",
+o:[
+"A. Penurunan derajat solidaritas internal kelompok",
+"B. Penguatan identitas kelompok yang disertai prasangka dan stereotip negatif terhadap pihak luar",
+"C. Kegagalan fungsi pengawasan dari lembaga media cetak",
+"D. Peningkatan daya saing akademis antaranggota kelompok",
+"E. Perubahan struktur kelompok dari sekunder menjadi primer"
+],a:"B",r:"Identitas kelompok yang kuat dapat berubah menjadi in-group bias ketika anggota memberi penilaian negatif atau prasangka kepada out-group."
+},
+{
+q:"Gelombang otomatisasi dan penerapan sistem AI di berbagai industri di Indonesia memicu ancaman pemutusan hubungan kerja (PHK) masif pada pekerjaan rutin. Penjelasan sosiologis mengenai kesiapan masyarakat terhadap perubahan ini mengarah pada...",
+o:[
+"A. Cultural Shock akibat perubahan nilai-nilai keagamaan",
+"B. Cultural Lag karena kecepatan teknologi tak diimbangi kesiapan institusi pendidikan dan keahlian tenaga kerja",
+"C. Disorganisasi sosial yang berujung pada anarki nasional",
+"D. Modernisasi yang berjalan terlalu lambat di sektor teknologi",
+"E. Difusi budaya yang menolak nilai-nilai lokal"
+],a:"B",r:"Cultural lag terjadi ketika unsur material, seperti teknologi, berkembang lebih cepat daripada kemampuan institusi dan masyarakat dalam menyesuaikan diri."
+},
+{
+q:"Fenomena kemunculan \"Childfree\" (keputusan untuk tidak memiliki anak) di kalangan pasangan muda perkotaan mulai menggeser fungsi tradisional lembaga keluarga. Fungsi lembaga keluarga yang paling langsung terpengaruh oleh tren ini adalah...",
+o:[
+"A. Fungsi Afeksi dan Sosialisasi",
+"B. Fungsi Proteksi dan Protektif",
+"C. Fungsi Reproduksi dan Biologis",
+"D. Fungsi Ekonomi dan Pengawasan",
+"E. Fungsi Penentuan Status dan Pemberian Gelar"
+],a:"C",r:"Fungsi reproduksi keluarga berkaitan langsung dengan keberadaan dan kelahiran keturunan."
+},
+{
+q:"Tren penggunaan aplikasi kencan daring (dating apps) telah mengubah pola pencarian pasangan di kalangan milenial. Jika dianalisis dengan teori Dramaturgi Erving Goffman, profil akun pengguna aplikasi kencan berfungsi sebagai...",
+o:[
+"A. Backstage tempat individu menampilkan karakter aslinya tanpa rekayasa",
+"B. Frontstage tempat individu mengelola kesan (impression management) demi penilaian positif",
+"C. Setting fisik yang menentukan norma sosial secara langsung",
+"D. Off-stage yang tidak memengaruhi proses interaksi sosial",
+"E. Script formal yang diatur oleh institusi agama"
+],a:"B",r:"Frontstage adalah bagian ketika individu menampilkan diri di hadapan audiens dan melakukan impression management."
+},
+{
+q:"Gelombang protes mahasiswa dan masyarakat sipil terhadap revisi undang-undang yang dinilai merugikan demokrasi menunjukkan bentuk gerakan sosial...",
+o:[
+"A. Gerakan konservatif yang mempertahankan status quo",
+"B. Gerakan reformis yang menuntut perbaikan sistem hukum dan tata kelola pemerintahan",
+"C. Gerakan radikal yang ingin mengganti ideologi negara",
+"D. Gerakan ekspresif yang berfokus pada emosi personal",
+"E. Gerakan regresif yang ingin kembali ke masa lalu"
+],a:"B",r:"Gerakan reformis bertujuan mengubah atau memperbaiki bagian tertentu dari sistem yang sudah ada, bukan mengganti seluruh sistem."
+},
+{
+q:"Praktik nepotisme dan politik dinasti dalam ranah pemerintahan daerah memperlihatkan bahwa saluran mobilitas sosial telah terhambat oleh...",
+o:[
+"A. Ascribed status yang mendominasi atas achieved status",
+"B. Tingginya meritokrasi dalam sistem birokrasi",
+"C. Keterbukaan struktur sosial terhadap kelas bawah",
+"D. Mobilisasi vertikal naik yang berbasis kualifikasi akademis",
+"E. Dominasi mobilitas antargenerasi secara terbuka"
+],a:"A",r:"Ascribed status diperoleh karena kelahiran atau latar belakang. Jika hubungan keluarga lebih menentukan daripada prestasi, kesempatan mobilitas berbasis achieved status dapat terhambat."
+},
+{
+q:"Fenomena \"Cancel Culture\" di media sosial yang menghukum sanksi sosial berupa pengucilan online terhadap figur publik pelaku pelanggaran etika merupakan bentuk kontrol sosial...",
+o:[
+"A. Formal dan Represif",
+"B. Informal dan Komunal-Digital",
+"C. Coercive dan Koersif Birokratis",
+"D. Institusional dan Hukum Tertulis",
+"E. Persuasif dan Edukatif Sekolahan"
+],a:"B",r:"Pengucilan oleh komunitas online bukan sanksi hukum formal, sehingga termasuk kontrol sosial informal yang berlangsung melalui komunitas digital."
+},
+{
+q:"Pembentukan komunitas partisipatif pengolahan sampah mandiri di tingkat RW berbasis aplikasi pengelolaan limbah digital menunjukkan contoh...",
+o:[
+"A. Konflik lingkungan antarwarga",
+"B. Pembangunan berpusat pada negara (state-centered development)",
+"C. Kemitraan berbasis modal sosial dan inovasi teknologi lokal",
+"D. Modernisasi paksaan yang merusak tatanan nilai lama",
+"E. Perubahan sosial regresif yang merugikan masyarakat"
+],a:"C",r:"Partisipasi warga dan penggunaan teknologi untuk kepentingan bersama menunjukkan pemanfaatan modal sosial sekaligus inovasi lokal."
+},
+{
+q:"Meningkatnya angka kejahatan peretasan data pribadi (phishing dan data breach) di Indonesia dikategorikan sebagai penyimpangan sosial modern karena...",
+o:[
+"A. Dilakukan tanpa melanggar hukum normatif negara",
+"B. Merupakan bentuk white-collar crime atau cybercrime yang merugikan hak privasi masyarakat",
+"C. Hanya berdampak pada individu tingkat ekonomi atas",
+"D. Bersumber dari ketidakmampuan beradaptasi dengan norma lokal",
+"E. Termasuk dalam penyimpangan primer yang dapat ditoleransi"
+],a:"B",r:"Phishing dan data breach merupakan bentuk kejahatan yang memanfaatkan teknologi dan dapat merugikan privasi serta keamanan data."
+},
+{
+q:"Tingginya angka partisipasi kerja wanita di sektor formal perkotaan memicu pergeseran peran dalam keluarga, di mana suami turut membagi peran domestik. Realitas ini mencerminkan fenomena...",
+o:[
+"A. Reorganisasi fungsi keluarga berbasis kesetaraan gender",
+"B. Disintegrasi struktur keluarga patriarki total",
+"C. Penurunan nilai moral dalam kehidupan berumah tangga",
+"D. Konflik peran yang tak terelakkan di antara pasangan suami istri",
+"E. Hilangnya fungsi sosialisasi anak secara menyeluruh"
+],a:"A",r:"Pembagian peran domestik yang lebih seimbang menunjukkan reorganisasi fungsi keluarga menuju pembagian peran yang lebih setara."
+},
+{
+q:"Kebijakan digitalisasi transaksi keuangan (QRIS) membuat pedagang pasar tradisional harus beradaptasi dengan teknologi pembayaran nirsentuh. Kesiapan ini menunjukkan proses...",
+o:[
+"A. Akulturasi budaya keuangan tanpa menghilangkan fungsi pasar konvensional",
+"B. Asimilasi total yang menghapuskan uang tunai seketika",
+"C. Difusi inovasi teknologi yang merubah pola transaksi ekonomi",
+"D. Rejection terhadap modernisasi ekonomi modern",
+"E. Isolasi ekonomi bagi pedagang mikro"
+],a:"C",r:"Difusi adalah penyebaran unsur atau inovasi baru. QRIS menyebarkan teknologi pembayaran digital ke lingkungan transaksi tradisional."
+},
+{
+q:"Polarisasi opini publik terkait pemilihan kepala daerah di ruang siber sering kali berlanjut pada pemutusan hubungan pertemanan di dunia nyata (unfriending/blocking). Fenomena sosial ini menunjukkan bahwa...",
+o:[
+"A. Interaksi siber tidak memiliki dampak pada kehidupan nyata",
+"B. Media sosial memperkuat diferensiasi ideologis yang memicu disintegrasi sosial mikro",
+"C. Konflik politik selalu berujung pada kekerasan fisik",
+"D. Integrasi sosial di Indonesia telah runtuh secara total",
+"E. Masyarakat mengalami konsolidasi sosial berbasis kearifan lokal"
+],a:"B",r:"Interaksi digital dapat memengaruhi relasi offline. Polarisasi dapat menyebabkan renggangnya hubungan pada tingkat kelompok kecil atau pertemanan."
+},
+{
+q:"Maraknya gerakan \"Zero Waste Living\" di kalangan perkotaan urban berbenturan dengan budaya konsumtif kemasan plastik sekali pakai. Dalam perspektif teori perubahan sosial, hal ini menggambarkan...",
+o:[
+"A. Perubahan evolusiner yang lambat tanpa arah",
+"B. Pergeseran nilai sosial akibat munculnya kesadaran ekologis eksternal",
+"C. Benturan antara gerakan sosial baru (new social movement) dengan kebiasaan struktur pasar",
+"D. Kegagalan total kebijakan lingkungan pemerintah",
+"E. Kemunduran budaya akibat menolak kemajuan teknologi plastik"
+],a:"C",r:"Zero Waste dapat dilihat sebagai gerakan sosial baru yang membawa nilai ekologis dan berhadapan dengan pola konsumsi serta struktur pasar yang sudah mapan."
+},
+{
+q:"Keberadaan warung kopi modern (coffee shop) yang berfungsi sebagai ruang kerja bersama (co-working space) bagi generasi muda mencerminkan perubahan fungsi ruang publik, yaitu dari...",
+o:[
+"A. Tempat interaksi komunal menjadi sarana komersialisasi produktivitas individual",
+"B. Pusat kegiatan politik formal menjadi lokasi konflik kelas",
+"C. Tempat sosialisasi keagamaan menjadi tempat sekularisasi total",
+"D. Ruang terbuka hijau menjadi area pemukiman padat",
+"E. Area konsumsi material menjadi pusat pendidikan non-formal"
+],a:"A",r:"Ruang yang sebelumnya dominan sebagai tempat interaksi sosial dapat berubah menjadi ruang yang sekaligus dikomersialkan untuk aktivitas kerja dan produktivitas."
+},
+
+/* BAGIAN II */
+{
+q:"Fenomena maraknya judi online (judol) di kalangan masyarakat berpenghasilan rendah dipengaruhi oleh berbagai faktor sosiologis. Manakah faktor yang mendukung fenomena tersebut?",
+o:[
+"(1) Terjadinya anomi struktural di mana peluang ekonomi formal menyempit.",
+"(2) Pengaruh sosialisasi subkebudayaan menyimpang melalui jejaring sosial pertemanan.",
+"(3) Efektivitas lembaga pengawasan sosial formal yang sangat tinggi.",
+"(4) Ilusi mobilitas sosial vertikal secara cepat tanpa modal kapital besar."
+],a:"B",r:"Pernyataan benar: (1), (2), dan (4). (3) salah karena pengawasan sosial formal yang efektif justru akan menghambat fenomena tersebut.",complex:true
+},
+{
+q:"Dampak sosial dari meluasnya penggunaan teknologi Artificial Intelligence (AI) generatif pada sektor industri kreatif meliputi:",
+o:[
+"(1) Potensi devaluasi nilai karya seni buatan manusia.",
+"(2) Perubahan struktur kesempatan kerja bagi desainer grafis dan penulis.",
+"(3) Hilangnya seluruh bentuk interaksi sosial budaya dalam masyarakat.",
+"(4) Kebutuhan akan re-skilling dan adaptasi modal budaya baru."
+],a:"B",r:"Pernyataan benar: (1), (2), dan (4). (3) terlalu ekstrem dan tidak didukung oleh analisis sosiologis.",complex:true
+},
+{
+q:"Pierre Bourdieu mengemukakan konsep modal (capital) dalam ranah sosial. Di dunia siber saat ini, bentuk modal sosial dan budaya ditunjukkan oleh:",
+o:[
+"(1) Jumlah pengikut (followers) dan tingkat keterlibatan (engagement rate) di akun media sosial.",
+"(2) Kepemilikan aset kripto dan saham digital bernilai tinggi.",
+"(3) Kemampuan literasi digital dan penguasaan bahasa pemrograman khusus.",
+"(4) Kepemilikan sertifikat fisik tanah dan bangunan rumah mewah."
+],a:"C",r:"Pernyataan yang sesuai: (1) dan (3). Dalam konteks soal, (1) diposisikan sebagai modal sosial dan (3) sebagai modal budaya. (2) dan (4) merupakan modal ekonomi.",complex:true
+},
+{
+q:"Fenomena gentrifikasi di kawasan perkotaan (misalnya pembongkaran pemukiman kumuh menjadi kafe dan apartemen mewah) membawa dampak sosial berupa:",
+o:[
+"(1) Tersingkirnya warga asli kelas bawah karena kenaikan biaya hidup.",
+"(2) Terjadinya perubahan struktur demografi dan gaya hidup di kawasan tersebut.",
+"(3) Terciptanya keharmonisan sosial tanpa gesekan antarkelas.",
+"(4) Segregasi spasial antara kaum elit dan penduduk lokal yang terpinggirkan."
+],a:"B",r:"Pernyataan benar: (1), (2), dan (4). (3) salah karena gentrifikasi dapat menimbulkan ketegangan dan perubahan hubungan antarkelas.",complex:true
+},
+{
+q:"Ciri-ciri masyarakat jejaring (network society) menurut Manuel Castells yang terfleksi dalam kehidupan modern Indonesia adalah:",
+o:[
+"(1) Informasi menjadi bahan baku utama dalam pengorganisasian struktur ekonomi.",
+"(2) Interaksi sosial dibatasi secara ketat oleh batas-batas geografis lokal.",
+"(3) Struktur organisasi cenderung berbentuk jaringan yang fleksibel dan terdesentralisasi.",
+"(4) Dominasi media massa searah (seperti TV dan koran) semakin menguat."
+],a:"C",r:"Pernyataan benar: (1) dan (3). Masyarakat jejaring menekankan informasi dan jaringan fleksibel, bukan keterbatasan geografis atau dominasi komunikasi satu arah.",complex:true
+},
+{
+q:"Faktor-faktor yang mendorong terjadinya mobilitas sosial vertikal naik pada generasi Z di Indonesia saat ini meliputi:",
+o:[
+"(1) Pemanfaatan platform digital untuk kewirausahaan mandiri (e-commerce/content creator).",
+"(2) Akses pendidikan tinggi melalui program beasiswa berbasis prestasi/kurang mampu.",
+"(3) Sistem kekerabatan klan/trah keluarga yang bersifat tertutup.",
+"(4) Keterampilan teknologis mutakhir (digital skill) yang relevan dengan pasar kerja modern."
+],a:"B",r:"Pernyataan benar: (1), (2), dan (4). (3) cenderung membatasi kesempatan mobilitas bagi orang di luar jaringan keluarga.",complex:true
+},
+{
+q:"Penyebab maraknya fenomena krisis mental (mental health issue) di kalangan remaja urban jika dianalisis dari sosiologi adalah:",
+o:[
+"(1) Tekanan komparasi sosial yang konstan melalui media sosial (FOMO).",
+"(2) Melonggarnya ikatan-ikatan sosial tradisional dan dukungan emosional keluarga.",
+"(3) Tingginya ketidakpastian masa depan ekonomi di tengah persaingan ketat.",
+"(4) Kegagalan total sistem biologis otak secara medis masif."
+],a:"A",r:"Pernyataan benar secara sosiologis: (1), (2), dan (3). (4) merupakan klaim medis/biologis, bukan penjelasan sosiologis.",complex:true
+},
+{
+q:"Ciri-ciri tindakan sosial rasional instrumental menurut Max Weber ditunjukkan oleh perilaku:",
+o:[
+"(1) Seseorang membeli saham setelah menganalisis laporan keuangan perusahaan secara mendalam.",
+"(2) Mengikuti tradisi mudik Lebaran semata-mata karena kebiasaan turun-temurun.",
+"(3) Mahasiswa memilih jurusan kuliah yang memiliki tingkat kebekerjaan paling tinggi di masa depan.",
+"(4) Seseorang menangis histeris saat menyaksikan konser musik idola."
+],a:"C",r:"Pernyataan benar: (1) dan (3). Keduanya menunjukkan pertimbangan tujuan dan sarana. (2) adalah tindakan tradisional, sedangkan (4) tindakan afektif.",complex:true
+},
+{
+q:"Lembaga pendidikan memiliki peran sentral dalam transformasi sosial. Fungsi manifes dari lembaga pendidikan menengah/tinggi saat ini meliputi:",
+o:[
+"(1) Transmisi keahlian teknologis dan literasi digital kepada peserta didik.",
+"(2) Memperpanjang masa remaja dan menunda usia pernikahan.",
+"(3) Mempersiapkan tenaga kerja yang kompetitif sesuai standar industri modern.",
+"(4) Menjadi sarana penjodohan antarpeserta didik dari status sosial sederajat."
+],a:"C",r:"Pernyataan benar: (1) dan (3). Keduanya merupakan fungsi yang direncanakan secara langsung. (2) dan (4) lebih tepat dipandang sebagai fungsi laten.",complex:true
+},
+{
+q:"Bentuk kejahatan siber (cybercrime) yang mengancam stabilitas sosial dan keamanan data nasional mencakup:",
+o:[
+"(1) Peretasan database institusi publik untuk tebusan (Ransomware).",
+"(2) Penyebaran berita bohong (hoax) politik untuk memicu konflik antarsuku/agama.",
+"(3) Penipuan transaksi jual beli daring dengan identitas palsu.",
+"(4) Mengkritik kebijakan publik pemerintah di media sosial secara konstruktif."
+],a:"A",r:"Pernyataan benar: (1), (2), dan (3). (4) merupakan bentuk partisipasi atau ekspresi publik dan tidak otomatis termasuk cybercrime.",complex:true
+},
+{
+q:"Faktor pembentuk identitas hybrid pada remaja generasi Z akibat globalisasi media adalah:",
+o:[
+"(1) Konsumsi masif budaya populer asing (seperti K-Pop, Anime, Hollywood).",
+"(2) Interaksi konstan dengan pengguna internet dari berbagai negara di media sosial.",
+"(3) Pengadopsian gaya bahasa dan tren fesyen global yang dipadukan dengan kearifan lokal.",
+"(4) Penolakan total terhadap nilai-nilai budaya lokal Indonesia."
+],a:"A",r:"Pernyataan benar: (1), (2), dan (3). Identitas hibrida merupakan perpaduan berbagai pengaruh budaya, bukan penolakan total terhadap budaya lokal.",complex:true
+}
+];
+
+let current = 0;
+let score = 0;
+let answers = Array(questions.length).fill(null);
+
+const combo = {
+  A:["1","2","3"],
+  B:["1","2","4"],
+  C:["1","3"],
+  D:["2","4"],
+  E:["1","2","3","4"]
+};
+
+function render(){
+  const q = questions[current];
+  document.getElementById("number").textContent = `Soal ${current+1} dari ${questions.length}`;
+  document.getElementById("part").textContent =
+    current < 20 ? "Bagian I: Pilihan Ganda Tunggal" : "Bagian II: Pilihan Ganda Kompleks";
+  document.getElementById("section").textContent =
+    current < 20 ? "Pilihan Ganda Tunggal" : "Pilihan Ganda Kompleks";
+  document.getElementById("question").textContent = q.q;
+
+  const box = document.getElementById("options");
+  box.innerHTML = "";
+
+  q.o.forEach((text,i)=>{
+    const btn=document.createElement("button");
+    btn.className="option";
+    btn.innerHTML = q.complex
+      ? `<span class="letter">${i+1}</span>${text}`
+      : `<span class="letter">${String.fromCharCode(65+i)}</span>${text.substring(3)}`;
+    btn.onclick=()=>choose(i);
+    if(answers[current] !== null){
+      btn.classList.add("disabled");
+      if(!q.complex && String.fromCharCode(65+i)===q.a) btn.classList.add("correct");
+      if(!q.complex && answers[current]===i && String.fromCharCode(65+i)!==q.a) btn.classList.add("wrong");
+    }
+    box.appendChild(btn);
+  });
+
+  if(q.complex){
+    // Complex questions use the A-E combination answers.
+    box.innerHTML = "";
+    const labels = [
+      ["A","(1), (2), dan (3) benar"],
+      ["B","(1), (2), dan (4) benar"],
+      ["C","(1) dan (3) benar"],
+      ["D","(2) dan (4) benar"],
+      ["E","Semua pernyataan benar"]
+    ];
+    labels.forEach(([letter,text],i)=>{
+      const btn=document.createElement("button");
+      btn.className="option";
+      btn.innerHTML=`<span class="letter">${letter}</span>${text}`;
+      btn.onclick=()=>choose(i);
+      if(answers[current] !== null){
+        btn.classList.add("disabled");
+        if(letter===q.a) btn.classList.add("correct");
+        if(answers[current]===i && letter!==q.a) btn.classList.add("wrong");
+      }
+      box.appendChild(btn);
+    });
+  }
+
+  const reason=document.getElementById("reason");
+  if(answers[current] !== null){
+    reason.style.display="block";
+    reason.innerHTML=`<b>Jawaban:</b> ${q.a}<br><br><b>Alasan:</b> ${q.r}`;
+  }else{
+    reason.style.display="none";
+  }
+
+  document.getElementById("prev").disabled=current===0;
+  document.getElementById("next").textContent=current===questions.length-1?"Selesai":"Selanjutnya";
+  document.getElementById("bar").style.width=((current+1)/questions.length*100)+"%";
+}
+
+function choose(index){
+  if(answers[current]!==null) return;
+  answers[current]=index;
+  const correctIndex="ABCDE".indexOf(questions[current].a);
+  if(index===correctIndex) score++;
+  render();
+}
+
+function nextQuestion(){
+  if(answers[current]===null){
+    alert("Pilih jawaban terlebih dahulu.");
+    return;
+  }
+  if(current<questions.length-1){
+    current++;
+    render();
+  }else{
+    showResult();
+  }
+}
+
+function previousQuestion(){
+  if(current>0){
+    current--;
+    render();
+  }
+}
+
+function showResult(){
+  document.getElementById("quiz").style.display="none";
+  document.getElementById("result").style.display="block";
+  const nilai=Math.round(score/questions.length*100);
+  document.getElementById("score").textContent=`${score} / ${questions.length}`;
+  document.getElementById("resultText").innerHTML=
+    `Nilai kamu: <b>${nilai}</b><br>
+     Jawaban benar: ${score}<br>
+     Jawaban salah: ${questions.length-score}`;
+}
+
+function restartQuiz(){
+  current=0;
+  score=0;
+  answers=Array(questions.length).fill(null);
+  document.getElementById("quiz").style.display="block";
+  document.getElementById("result").style.display="none";
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
